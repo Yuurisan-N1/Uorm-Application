@@ -1,0 +1,58 @@
+Uorm HOWTO
+
+Short version, six steps.
+
+1. INSTALL RUST
+   Windows / Linux / macOS: https://rustup.rs  then reopen the terminal and check:
+       rustc --version
+
+2. FILL data.txt
+   One account per line, the separator is a pipe:
+       email|password
+   Blank lines and lines starting with # are ignored. Keep the file private:
+       chmod 600 data.txt
+
+3. BUILD
+       cargo build --release
+   or let the wrapper do it:
+       ./run.sh build
+
+4. CONFIRM THE EMAIL ONCE
+   The server mails a six digit code to the inbox:
+       ./run.sh signup you@mail.com
+       ./run.sh verify you@mail.com 123456
+   After this the session is cached and no code is needed again.
+   Lost the code? Run the signup step again for a fresh one.
+
+5. LOOK BEFORE YOU CLAIM
+       ./run.sh probe
+   This reads the profile, missions, and mining session without claiming.
+   When the numbers look right, start the loop.
+
+6. RUN
+       ./run.sh run        foreground
+       ./run.sh bg         background, log in uorm-bot.log
+       ./run.sh screen     detached screen session
+       ./run.sh stop       stop it again
+
+PROXY
+   proxy.txt, one proxy per line, same order as data.txt:
+       http://user:pass@host:port
+       socks5://user:pass@host:port
+   An empty file means a direct connection.
+
+CONFIG
+   config.json holds sleep_seconds and the toggles for missions, daily bonus,
+   and mining. The mining session length, boost multiplier, and the daily
+   boost quota are read from the server, not from this file.
+
+WHAT A CYCLE DOES
+   sign in, daily bonus, social missions, mission board, bundles, mining
+   session, boost, then sleep.
+
+TROUBLE
+   "a wrong email and password pair"   data.txt does not match the account
+   "the email is not confirmed yet"    run the verify step once
+   "the confirmation code expired"     run the signup step for a new code
+   "the mining session has not finished yet"   nothing to claim yet
+   "the server is rate limiting the account"   slow down or rotate the proxy
